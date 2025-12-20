@@ -10,6 +10,7 @@ This section explains **why RAG exists**, **what problem it solves**, and
 ![RAG Pipeline](images/1.png)
 ---
 ## What LLMs Do Well — and Where They Fail ✅
+![LLM_FAIL](images/5.png)
 
 LLMs generate responses based on patterns learned during training.  
 This works well when:
@@ -21,9 +22,8 @@ This works well when:
 **Example:**
 
 > Why do people usually feel sleepy after lunch?
-
 The model can reason and respond directly.
-![LLM_FAIL](images/2.png)
+
 **Flow:**  
 Reason → Respond
 
@@ -75,11 +75,12 @@ Retraining a model for every update is:
 So the real question becomes:
 
 **How do we give the LLM the right information at the time of the question?** 🤔
+![LLM_FAIL](images/2.png)
 
 ---
 
 ## What Is Retrieval-Augmented Generation (RAG)? 🔍
-
+![LLM_FAIL](images/6.png)
 RAG solves this by separating the task into **two clear steps**:
 
 ### 1. Retrieval
