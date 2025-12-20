@@ -27,9 +27,6 @@ The model can reason and respond directly.
 **Flow:**  
 Reason → Respond
 
-yaml
-Copy code
-
 No external information is needed.
 
 ---
@@ -54,9 +51,6 @@ What is missing here is **relevant information**, not reasoning ability.
 
 **Correct flow:**  
 Collect Information → Reason → Respond
-
-yaml
-Copy code
 
 ---
 
