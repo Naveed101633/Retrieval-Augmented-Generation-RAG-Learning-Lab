@@ -23,7 +23,7 @@ This works well when:
 > Why do people usually feel sleepy after lunch?
 
 The model can reason and respond directly.
-
+![LLM_FAIL](images/2.png)
 **Flow:**  
 Reason → Respond
 
