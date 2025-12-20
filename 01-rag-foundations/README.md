@@ -8,7 +8,7 @@ This section explains **why RAG exists**, **what problem it solves**, and
 **how it works**, using a simple and highly relatable example. 📚
 
 ---
-
+![RAG Pipeline](images/1)
 ## What LLMs Do Well — and Where They Fail ✅
 
 LLMs generate responses based on patterns learned during training.  
