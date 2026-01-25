@@ -19,21 +19,105 @@ When a prompt is received, it is first sent to the retriever, which searches a *
 
 ## 🔑 Keyword Search
 
-Keyword search retrieves documents that contain the **exact words** from the user’s prompt.
+## 📑 Content Index
+
+* [Keyword Search](#-keyword-search)
+* [Semantic Search](#-semantic-search)
+* [Metadata Filtering](#-metadata-filtering)
+* [Hybrid Search](#-hybrid-search)
+
+---
+
+
+**Keyword search** retrieves documents containing the **exact words** from the user’s prompt. It is the **classic retrieval technique**, powering search engines and databases for decades.
 
 * Precise and fast ⚡
 * Sensitive to exact wording
 * Limited when documents use different phrasing
 
+
+### 📌 How It Works
+
+1. **Bag of Words (BoW):**
+
+   * Convert prompt and documents into vectors counting word occurrences
+   * Order of words is ignored; only **frequency matters**
+   * Sparse vectors are used since most words are absent in each document
+
+2. **Term-Document Matrix / Inverted Index:**
+
+   * Rows → words, Columns → documents
+   * Allows fast lookup: find all documents containing a specific word
+
+3. **Scoring Documents:**
+
+   * Count keyword matches
+   * Normalize for document length to avoid bias toward longer documents
+   * Weight keywords using **TF-IDF** for importance
+
 ---
 
-## 🧩 Semantic Search
+### 📑 TF-IDF (Term Frequency–Inverse Document Frequency)
 
-Semantic search retrieves documents based on **meaning**, not exact wording.
+* Rare words → higher weight
+* Common words → lower weight
+* Helps identify **more relevant documents**
+  
+![TF-IDF](3.png)
 
-* Uses embeddings and vector similarity
-* Finds relevant documents even when wording differs
-* More flexible than keyword search
+---
+
+### 🧩 Example
+
+Prompt: `"making pizza without a pizza oven"`
+
+* Keyword counts → `pizza: 2, making: 1, oven: 1, ...`
+* Documents with rare keywords like `"pizza"` score higher than those with common words like `"a"`
+  
+![TF-IDF](4.png)
+![TF-IDF](5.png)
+
+---
+### 🏆 BM25 (Best Matching 25)
+
+BM25 is the **modern standard** keyword search algorithm:
+
+* **Term frequency saturation:** repeated keywords give diminishing returns
+* **Document length normalization:** long documents are penalized mildly
+* **Tunable hyperparameters:** control keyword repetition and length penalties
+
+> BM25 is widely used in production retrievers (Elasticsearch, OpenSearch, etc.)
+![TF-IDF](6.png)
+
+
+**Key improvements over TF-IDF:**
+
+* **Term frequency saturation**
+  Repeated keywords give diminishing returns.
+  A document mentioning *“pizza”* 20 times is **not** twice as relevant as one mentioning it 10 times.
+
+* **Smarter length normalization**
+  Long documents are penalized gently, not harshly, allowing relevant long content to rank well.
+
+* **Tunable behavior**
+  Two parameters control scoring:
+
+  * **k₁** → how quickly term frequency saturates
+  * **b** → how strongly document length is normalized
+![TF-IDF](7.png)
+![TF-IDF](8.png)
+
+### ✅ Strengths
+
+* Simple, fast, and interpretable
+* Ensures documents contain **prompt keywords**
+* Works well in technical or exact-term queries
+
+### ⚠️ Limitations
+
+* Relies on exact word matches → misses semantic equivalents
+* Cannot rank documents by true relevance alone
+* Needs **semantic search** or **metadata filters** for full coverage
 
 ---
 
@@ -124,16 +208,3 @@ In practice, retrievers combine these techniques:
 5. Return the top relevant documents 🎯
 
 This approach is called **hybrid search**.
-
----
-
-### ✅ Notes on Navigation
-
-* Clicking the links in the **Content Index** will jump to the respective section.
-* Metadata Filtering section contains a **full concept with examples and pros/cons**, while other sections remain concise.
-
----
-
-If you want, I can **also expand Keyword Search, Semantic Search, and Hybrid Search** sections in the same “book-style” format with **examples, pros/cons, and clear explanations** so the README becomes **one full beginner-to-advanced guide for RAG retrievers**.
-
-Do you want me to do that next?
