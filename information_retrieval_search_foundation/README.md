@@ -114,7 +114,7 @@ BM25 is the **industry-standard keyword ranking algorithm** used in modern retri
 
 ---
 
-## 🧩 Semantic Search
+# 🧩 Semantic Search
 
 **Semantic search retrieves documents based on meaning, not exact words.**
 
@@ -205,6 +205,8 @@ Prompt:
 4. Rank documents
 5. Send top results to the LLM
 
+![Semantic_Serarch](13.png)
+
 ---
 
 ### ✅ Strengths
@@ -220,8 +222,38 @@ Prompt:
 * Best combined with keyword search
 
 ---
+## ⚙️ How Embeddings Are Trained
+**1. Collect Examples**
+- Positive pairs: text with similar meaning
+- Negative pairs: text with different meaning
 
-## 🏷️ Metadata Filtering
+Millions of pairs are used to capture subtle relationships across concepts.
+
+**2. Initialize Vectors**
+
+- Start randomly: vectors have no meaning at the beginning
+- Untrained vectors → retrieval would be meaningless
+![Semantic_Serarch](16.png)
+
+**3. Contrastive Learning**
+
+_For each pair:_
+
+1. Pull positive pairs closer
+2. Push negative pairs farther apart
+3. Repeat iteratively over all examples
+
+The model updates its internal parameters at each step
+
+**4. High-Dimensional Space**
+
+- Embeddings often have hundreds or thousands of dimensions
+- High dimensions give flexibility to place millions of texts meaningfully
+- Each text is influenced by many positives and negatives at once
+![Semantic_Serarch](17.png)
+
+---
+# 🏷️ Metadata Filtering
 
 **Metadata filtering** narrows documents using **structured attributes**, not text content.
 
