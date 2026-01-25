@@ -19,41 +19,35 @@ When a prompt is received, it is first sent to the retriever, which searches a *
 
 ## 🔑 Keyword Search
 
-## 📑 Content Index
+**Keyword search** retrieves documents containing the **exact words** from the user’s prompt.
+It is the **classic retrieval technique**, used in search engines and databases for decades.
 
-* [Keyword Search](#-keyword-search)
-* [Semantic Search](#-semantic-search)
-* [Metadata Filtering](#-metadata-filtering)
-* [Hybrid Search](#-hybrid-search)
-
----
-
-
-**Keyword search** retrieves documents containing the **exact words** from the user’s prompt. It is the **classic retrieval technique**, powering search engines and databases for decades.
+**Characteristics**
 
 * Precise and fast ⚡
 * Sensitive to exact wording
-* Limited when documents use different phrasing
+* Weak at understanding meaning
 
+---
 
-### 📌 How It Works
+### 📌 How Keyword Search Works
 
-1. **Bag of Words (BoW):**
+1. **Bag of Words (BoW)**
 
-   * Convert prompt and documents into vectors counting word occurrences
-   * Order of words is ignored; only **frequency matters**
-   * Sparse vectors are used since most words are absent in each document
+   * Text is converted into vectors of word counts
+   * Word order is ignored
+   * Results in sparse vectors
 
-2. **Term-Document Matrix / Inverted Index:**
+2. **Inverted Index**
 
-   * Rows → words, Columns → documents
-   * Allows fast lookup: find all documents containing a specific word
+   * Maps each word to the documents that contain it
+   * Enables fast keyword lookups
 
-3. **Scoring Documents:**
+3. **Document Scoring**
 
-   * Count keyword matches
-   * Normalize for document length to avoid bias toward longer documents
-   * Weight keywords using **TF-IDF** for importance
+   * Counts keyword matches
+   * Normalizes for document length
+   * Weights important words using **TF-IDF**
 
 ---
 
@@ -61,150 +55,247 @@ When a prompt is received, it is first sent to the retriever, which searches a *
 
 * Rare words → higher weight
 * Common words → lower weight
-* Helps identify **more relevant documents**
-  
+* Highlights discriminative terms
+
 ![TF-IDF](3.png)
 
 ---
 
 ### 🧩 Example
 
-Prompt: `"making pizza without a pizza oven"`
+Prompt:
+`"making pizza without a pizza oven"`
 
-* Keyword counts → `pizza: 2, making: 1, oven: 1, ...`
-* Documents with rare keywords like `"pizza"` score higher than those with common words like `"a"`
-  
+* Keywords: `pizza`, `making`, `oven`
+* Documents containing rare terms like **pizza** score higher
+* Common words like *“a”* contribute little
+
 ![TF-IDF](4.png)
 ![TF-IDF](5.png)
 
 ---
+
 ### 🏆 BM25 (Best Matching 25)
 
-BM25 is the **modern standard** keyword search algorithm:
+BM25 is the **industry-standard keyword ranking algorithm** used in modern retrievers.
 
-* **Term frequency saturation:** repeated keywords give diminishing returns
-* **Document length normalization:** long documents are penalized mildly
-* **Tunable hyperparameters:** control keyword repetition and length penalties
+![BM25](6.png)
 
-> BM25 is widely used in production retrievers (Elasticsearch, OpenSearch, etc.)
-![TF-IDF](6.png)
-
-
-**Key improvements over TF-IDF:**
+**Why BM25 improves on TF-IDF**
 
 * **Term frequency saturation**
-  Repeated keywords give diminishing returns.
-  A document mentioning *“pizza”* 20 times is **not** twice as relevant as one mentioning it 10 times.
+  Repeating a word many times yields diminishing returns
+  (“pizza” ×20 ≠ twice as relevant as “pizza” ×10)
 
 * **Smarter length normalization**
-  Long documents are penalized gently, not harshly, allowing relevant long content to rank well.
+  Long documents are penalized gently, not aggressively
 
 * **Tunable behavior**
-  Two parameters control scoring:
 
-  * **k₁** → how quickly term frequency saturates
-  * **b** → how strongly document length is normalized
-![TF-IDF](7.png)
-![TF-IDF](8.png)
+  * `k₁` → controls term frequency saturation
+  * `b` → controls length normalization
+
+![BM25 Params](7.png)
+![BM25 Params](8.png)
+
+---
 
 ### ✅ Strengths
 
-* Simple, fast, and interpretable
-* Ensures documents contain **prompt keywords**
-* Works well in technical or exact-term queries
+* Fast and interpretable
+* Ensures keyword presence
+* Ideal for exact or technical queries
 
 ### ⚠️ Limitations
 
-* Relies on exact word matches → misses semantic equivalents
-* Cannot rank documents by true relevance alone
-* Needs **semantic search** or **metadata filters** for full coverage
+* Cannot understand synonyms or intent
+* Misses semantic relevance
+* Needs semantic search for completeness
+
+---
+
+## 🧩 Semantic Search
+
+**Semantic search retrieves documents based on meaning, not exact words.**
+
+Instead of asking:
+
+> *“Which documents contain these words?”*
+
+It asks:
+
+> *“Which documents express the same idea?”*
+
+This makes it essential for natural language queries in RAG systems.
+
+---
+
+### ❌ Why Keyword Search Is Not Enough
+
+Keyword search fails when:
+
+* Different words share the same meaning
+  *happy ≠ glad*
+* One word has multiple meanings
+  *Python (language) ≠ python (snake)*
+
+Semantic search resolves this by modeling **context and intent**.
+
+---
+
+### 🧠 Core Idea: Everything Becomes a Vector
+
+Semantic search converts text into vectors using an **embedding model**:
+
+1. Documents → vectors
+2. Prompt → vector
+3. Similar meaning → similar vectors
+
+![Embedding Models](9.png)
+
+---
+
+### 📍 What Is an Embedding?
+
+An **embedding** is a numerical representation of meaning.
+
+* Similar concepts → vectors close together
+* Unrelated concepts → vectors far apart
+
+Think of it as a **map of meaning** in high-dimensional space:
+
+* *food* ↔ *cuisine* → close
+* *trombone* ↔ *cat* → far
+
+![Embeddings](10.png)
+
+---
+
+### 📐 Measuring Similarity
+
+The retriever compares vectors using **cosine similarity**:
+
+* Measures **direction**, not magnitude
+* Focuses on semantic orientation
+* Stable in high-dimensional spaces
+
+Higher cosine similarity → higher relevance
+
+![Cosine Similarity](12.png)
+
+---
+
+### 🧩 Example
+
+Prompt:
+`"He whispered quietly during class"`
+
+* Document A: *“He spoke softly in class”* → high similarity
+* Document B: *“Her daughter brightened the gloomy day”* → low similarity
+
+![Semantic Example](11.png)
+
+---
+
+### 🔍 Semantic Search in a RAG Pipeline
+
+1. Embed all documents
+2. Embed the user prompt
+3. Compute similarity scores
+4. Rank documents
+5. Send top results to the LLM
+
+---
+
+### ✅ Strengths
+
+* Understands synonyms and paraphrases
+* Matches intent, not wording
+* Essential for conversational queries
+
+### ⚠️ Limitations
+
+* Does not guarantee keyword presence
+* May surface semantically close but factually weak results
+* Best combined with keyword search
 
 ---
 
 ## 🏷️ Metadata Filtering
 
-*Metadata filtering* narrows down documents based on **structured attributes**, not content. It works alongside keyword or semantic search to refine results.
+**Metadata filtering** narrows documents using **structured attributes**, not text content.
 
-### Concept Index
+![Metadata Filtering](2.png)
 
-* [What is Metadata Filtering](#what-is-metadata-filtering)
-* [How It Works](#how-it-works)
-* [Example](#example)
-* [Use in RAG](#use-in-rag)
-* [Advantages](#advantages)
-* [Limitations](#limitations)
+---
 
-### What is Metadata Filtering
+### 📌 What Is Metadata?
 
-Metadata filtering selects documents using **metadata** rather than full text. Common metadata includes:
+Metadata includes:
 
-* Title
 * Author
-* Creation date
-* Access level (e.g., free or paid)
+* Date
+* Section
+* Access level
 * Region or department
 
-Think of it as **strict rules that filter a large dataset** before further retrieval.
-![Metadata Filtering](2.png)
-### How It Works
+It acts as **strict pre-conditions** before ranking.
 
-1. Each document in the knowledge base has metadata attached.
-2. Filters exclude documents that do not meet criteria.
-3. Only documents satisfying **all conditions** are returned.
+---
 
-> Conceptually, it’s like filtering rows in a spreadsheet or a SQL query.
+### ⚙️ How It Works
 
-Filters can be dynamic depending on the user:
+1. Each document has metadata fields
+2. Filters exclude documents that fail conditions
+3. Remaining documents are passed to search
 
-* Paid vs free subscriber
-* User location / region
-* Department-specific access
+> Comparable to SQL `WHERE` clauses or spreadsheet filters
 
-### Example
+---
 
-Suppose you build a retriever for a newspaper:
+### 🧩 Example
 
-* Knowledge base: thousands of articles
-* Metadata per article: author, date, section, paid/free, region
+Newspaper retriever:
 
-**Queries:**
+* User is a free subscriber
+* Region: Europe
 
-* “All opinion articles by Alice between June and July 2024”
-* System detects the user is a free subscriber → excludes paid articles
-* System detects the reader is in Europe → returns only Europe articles
+Query:
 
-> Only metadata is used in this step — the full text is ignored.
+> “Opinion articles by Alice in June 2024”
 
-### Use in RAG Systems
+System:
 
-* Metadata filtering **does not retrieve documents alone**.
-* It refines results from **keyword or semantic search**.
-* Filters are based on **user attributes**, not query text.
+* Excludes paid articles
+* Filters to Europe region
+* Ignores full text at this stage
 
-### Advantages ✅
+---
 
-* Conceptually simple — easy to understand and debug
-* Fast and well-optimized
-* Only method to strictly enforce inclusion/exclusion rules
+### ✅ Advantages
 
-### Limitations ⚠️
+* Fast and deterministic
+* Enforces access control
+* Easy to debug
 
-* Not a true search technique — does **not rank by relevance**
-* Overly rigid — ignores document content
-* Cannot determine if a document is truly relevant
+### ⚠️ Limitations
 
-> Metadata filtering is effective **only when combined with other retrieval techniques** like keyword or semantic search.
+* Does not rank relevance
+* Ignores document meaning
+* Cannot work alone
 
 ---
 
 ## 🔀 Hybrid Search
 
-In practice, retrievers combine these techniques:
+Production retrievers combine all techniques:
 
-1. Run keyword search 🔑
-2. Run semantic search 🧩
-3. Apply metadata filters 🏷️
-4. Merge and re-rank results 📊
-5. Return the top relevant documents 🎯
+1. Keyword search 🔑
+2. Semantic search 🧩
+3. Metadata filtering 🏷️
+4. Merge and re-rank 📊
+5. Return best documents 🎯
 
-This approach is called **hybrid search**.
+> **Hybrid search balances precision, meaning, and control — the foundation of modern RAG systems.**
+
+---
