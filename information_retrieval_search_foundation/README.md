@@ -440,9 +440,7 @@ Measures **result quality**.
 
 > Of all retrieved documents, how many are actually relevant?
 
-[
-\text{Precision} = \frac{\text{Relevant Retrieved}}{\text{Total Retrieved}}
-]
+Precision = $\frac{\text{Relevant Retrieved}}{\text{Total Retrieved}}$
 
 * High precision → fewer irrelevant documents
 * Indicates how **trustworthy** the results are
@@ -455,9 +453,7 @@ Measures **coverage**.
 
 > Of all relevant documents that exist, how many were retrieved?
 
-[
-\text{Recall} = \frac{\text{Relevant Retrieved}}{\text{Total Relevant}}
-]
+Recall = $\frac{\text{Relevant Retrieved}}{\text{Total Relevant}}$
 
 * High recall → fewer missed documents
 * Indicates how **complete** the retrieval is
