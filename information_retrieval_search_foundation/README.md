@@ -4,7 +4,7 @@
 
 When a prompt is received, it is first sent to the retriever, which searches a **knowledge base** (a collection of documents 📚) and returns the best matches to be passed to the **LLM** 🤖.
 
-![Retriever Architecture](1.png)
+![Retriever Architecture](Images/1.png)
 
 ---
 
@@ -57,7 +57,7 @@ It is the **classic retrieval technique**, used in search engines and databases 
 * Common words → lower weight
 * Highlights discriminative terms
 
-![TF-IDF](3.png)
+![TF-IDF](Images/3.png)
 
 ---
 
@@ -70,8 +70,8 @@ Prompt:
 * Documents containing rare terms like **pizza** score higher
 * Common words like *“a”* contribute little
 
-![TF-IDF](4.png)
-![TF-IDF](5.png)
+![TF-IDF](Images/4.png)
+![TF-IDF](Images/5.png)
 
 ---
 
@@ -79,7 +79,7 @@ Prompt:
 
 BM25 is the **industry-standard keyword ranking algorithm** used in modern retrievers.
 
-![BM25](6.png)
+![BM25](Images/6.png)
 
 **Why BM25 improves on TF-IDF**
 
@@ -95,8 +95,8 @@ BM25 is the **industry-standard keyword ranking algorithm** used in modern retri
   * `k₁` → controls term frequency saturation
   * `b` → controls length normalization
 
-![BM25 Params](7.png)
-![BM25 Params](8.png)
+![BM25 Params](Images/7.png)
+![BM25 Params](Images/8.png)
 
 ---
 
@@ -151,7 +151,7 @@ Semantic search converts text into vectors using an **embedding model**:
 2. Prompt → vector
 3. Similar meaning → similar vectors
 
-![Embedding Models](9.png)
+![Embedding Models](Images/9.png)
 
 ---
 
@@ -167,7 +167,7 @@ Think of it as a **map of meaning** in high-dimensional space:
 * *food* ↔ *cuisine* → close
 * *trombone* ↔ *cat* → far
 
-![Embeddings](10.png)
+![Embeddings](Images/10.png)
 
 ---
 
@@ -181,7 +181,7 @@ The retriever compares vectors using **cosine similarity**:
 
 Higher cosine similarity → higher relevance
 
-![Cosine Similarity](12.png)
+![Cosine Similarity](Images/12.png)
 
 ---
 
@@ -193,7 +193,7 @@ Prompt:
 * Document A: *“He spoke softly in class”* → high similarity
 * Document B: *“Her daughter brightened the gloomy day”* → low similarity
 
-![Semantic Example](11.png)
+![Semantic Example](Images/11.png)
 
 ---
 
@@ -205,7 +205,7 @@ Prompt:
 4. Rank documents
 5. Send top results to the LLM
 
-![Semantic_Serarch](13.png)
+![Semantic_Serarch](Images/13.png)
 
 ---
 
@@ -233,7 +233,7 @@ Millions of pairs are used to capture subtle relationships across concepts.
 
 - Start randomly: vectors have no meaning at the beginning
 - Untrained vectors → retrieval would be meaningless
-![Semantic_Serarch](16.png)
+![Semantic_Serarch](Images/16.png)
 
 **3. Contrastive Learning**
 
@@ -250,14 +250,14 @@ The model updates its internal parameters at each step
 - Embeddings often have hundreds or thousands of dimensions
 - High dimensions give flexibility to place millions of texts meaningfully
 - Each text is influenced by many positives and negatives at once
-![Semantic_Serarch](17.png)
+![Semantic_Serarch](Images/17.png)
 
 ---
 # 🏷️ Metadata Filtering
 
 **Metadata filtering** narrows documents using **structured attributes**, not text content.
 
-![Metadata Filtering](2.png)
+![Metadata Filtering](Images/2.png)
 
 ---
 
