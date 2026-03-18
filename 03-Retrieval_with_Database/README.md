@@ -20,6 +20,8 @@ Standard relational databases can handle basic retrieval, but **vector operation
 ### Approximate Nearest Neighbors (ANN)
 - Uses clever data structures (proximity graphs) to **skip most comparisons**.
 - Trade-off: not guaranteed to find the absolute best match, but finds **very close** ones — fast.
+  
+![ANN](Images/Ann1.png)
 
 ### Navigable Small World (NSW)
 1. Pre-build a **proximity graph**: each document node connects to its closest neighbors.
@@ -38,6 +40,9 @@ Adds **multiple layers** to NSW:
 - Search starts at the top → big jumps to the right neighborhood → drill down to the full index.
 - Runtime: **O(log n)** vs KNN's O(n) — enables billions of vectors with milliseconds latency.
 - Proximity graph is **pre-computed** once; no rebuild per query.
+
+  ![HNSW](Images/hnsw1.png)
+  ![HNSW](Images/hnsw2.png)
 
 ---
 
@@ -58,19 +63,25 @@ Configure DB → Load documents → Index (sparse + dense vectors + ANN index) �
 
 > 💡 **Hybrid search is the production default** — balances semantic similarity with exact term matching.
 
+  ![DB](Images/vectordb1.png)
 ---
 
 ## ✂️ Chunking
+  ![Chunk](Images/chunking1.png)
 
 Splitting documents into smaller pieces before indexing. Three reasons:
 1. Embedding models have **token limits**.
 2. Smaller chunks → **sharper, more precise vectors**.
 3. Retrieve only the relevant excerpt → **less LLM context waste**.
 
+![Chunk](Images/chunking2.png)
+
 ### Fixed-Size Chunking
 - Chunk every N characters (e.g., 500 chars).
 - Add **overlap** (e.g., 10% = 50 chars) to avoid cutting context at boundaries.
 - Simple, fast, good default. ✅ Start here.
+
+![Chunk](Images/chunking3.png)
 
 ### Recursive Character Splitting
 - Split on meaningful characters (e.g., `\n` between paragraphs, `</p>` for HTML, function definitions for code).
@@ -81,6 +92,8 @@ Splitting documents into smaller pieces before indexing. Three reasons:
 - If similarity drops below threshold → start a new chunk.
 - Chunks follow the **author's train of thought**, not arbitrary character counts.
 - More expensive (repeated vectorization), but higher retrieval quality.
+
+![Chunk](Images/semantic_chunking.png)
 
 ### LLM-Based Chunking
 - Give the full document + chunking instructions to an LLM.
@@ -97,6 +110,7 @@ Splitting documents into smaller pieces before indexing. Three reasons:
 ---
 
 ## 🔍 Query Parsing
+![Chunk](Images/query_parsing.png)
 
 User prompts are conversational — not optimized for retrieval. Parse them before sending to the vector DB.
 
@@ -133,6 +147,8 @@ Rewritten: "Sudden forceful shoulder pull → persistent shoulder and finger num
 - All document vectors pre-computed → only prompt needs embedding at query time.
 - Fast ✅ | Good quality ✅ | Default choice ✅
 
+![encoder](Images/bi_encoder.png)
+
 ### Cross-Encoder (Gold Standard Quality)
 - Concatenate `[prompt + document]` → pass through model → outputs relevance score (0–1).
 - Captures **deep contextual interactions** between prompt and document.
@@ -140,12 +156,16 @@ Rewritten: "Sudden forceful shoulder pull → persistent shoulder and finger num
 - ❌ Not viable as a standalone search technique.
 - ✅ Perfect for **re-ranking** a small shortlist.
 
+![encoder](Images/cross-encoder.png)
+
 ### ColBERT (Best of Both)
 - Embed each **token** separately (not whole document).
 - At query time: each prompt token finds its most similar document token → sum max scores (**MaxSim**).
 - Nearly cross-encoder quality at near bi-encoder speed.
 - Cost: stores **N vectors per document** (one per token) → large storage footprint.
 - Best for high-precision domains (legal, medical).
+
+![encoder](Images/co-bert.png)
 
 ---
 
@@ -161,6 +181,8 @@ Hybrid Search (retrieve 20–100 docs)
    Re-Ranker (cross-encoder or LLM)
         ↓
 Final Top 5–10 (high precision)
+
+![ranking](Images/reranking.png)
 ```
 
 - Re-ranker rescores each `(prompt, doc)` pair with a cross-encoder or LLM.
@@ -169,6 +191,8 @@ Final Top 5–10 (high precision)
 - In most vector DBs: **one line of code** to enable.
 
 > 🎯 Re-ranking is often the **highest ROI improvement** you can make to a retriever.
+
+![encoder](Images/reranking.png)
 
 ---
 
